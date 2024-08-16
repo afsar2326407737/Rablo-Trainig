@@ -1,62 +1,28 @@
 import 'package:dio/dio.dart';
-import 'package:socila_media_application/exceptions/app_exceptions.dart';
-import 'package:socila_media_application/models/CommentModel.dart';
-import 'package:socila_media_application/models/PostMdodel.dart';
-import 'package:socila_media_application/models/UserModel.dart';
+import 'package:socila_media_application/models/post_model.dart';
 
-class ApiServices {
-  final Dio _dio = Dio(BaseOptions(
-    baseUrl: 'https://jsonplaceholder.typicode.com',
-    connectTimeout: Duration(seconds: 10),
-    receiveTimeout: Duration(seconds: 10),
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  )
-  );
+class ApiService {
+  final Dio _dio = Dio();
+  final String baseUrl = 'https://jsonplaceholder.typicode.com';
 
-  Future<List<PostModel>> fetchPosts() async {
+  // Fetch list of posts
+  Future<List<Post>> fetchPosts() async {
     try {
-      final response = await _dio.get('/post');
-      return (response.data as List)
-          .map((post) => PostModel.fromJson(post))
-          .toList();
-    } on DioException catch (e) {
-      throw AppExceptions.handleError(e);
+      final response = await _dio.get('$baseUrl/posts');
+      List<Post> posts = (response.data as List).map((json) => Post.fromJson(json)).toList();
+      return posts;
+    } catch (e) {
+      throw Exception('Failed to load posts');
     }
   }
 
-  // fetch commends for a specific post
-
-  Future<List<CommentModel>> fetchComments(int postId) async {
+  // Fetch details of a single post
+  Future<Post> fetchPostDetails(int id) async {
     try {
-      final response = await _dio.get('/post/$postId/comments');
-      return (response.data as List)
-          .map((comment) => CommentModel.fromJson(comment))
-          .toList();
-    } on DioException catch (e) {
-      throw AppExceptions.handleError(e);
+      final response = await _dio.get('$baseUrl/posts/$id');
+      return Post.fromJson(response.data);
+    } catch (e) {
+      throw Exception('Failed to load post details');
     }
   }
-
-  // fetch the user details for a specific user
-
-  Future<UserModel> fetchUser(int userId) async {
-    try {
-      final response = await _dio.get('/user/$userId');
-      return UserModel.fromJson(response.data);
-    } on DioException catch (e) {
-      throw AppExceptions.handleError(e);
-    }
-  }
-
-  // create the new post
-  Future<PostModel> createPost(PostModel newPost) async {
-    try {
-      final response = await _dio.post('/post', data: newPost.toJson());
-      return PostModel.fromJson(response.data);
-    } on DioException catch (e) {
-      throw AppExceptions.handleError(e);
-    }
-  }  
 }
