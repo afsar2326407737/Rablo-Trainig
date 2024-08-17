@@ -1,4 +1,4 @@
-class UserModel {
+class User {
   final int id;
   final String name;
   final String username;
@@ -8,7 +8,7 @@ class UserModel {
   final String website;
   final Company company;
 
-  UserModel({
+  User({
     required this.id,
     required this.name,
     required this.username,
@@ -19,8 +19,8 @@ class UserModel {
     required this.company,
   });
 
-  factory UserModel.fromJson(Map<String, dynamic> json) {
-    return UserModel(
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
       id: json['id'],
       name: json['name'],
       username: json['username'],
@@ -30,20 +30,7 @@ class UserModel {
       website: json['website'],
       company: Company.fromJson(json['company']),
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'username': username,
-      'email': email,
-      'address': address.toJson(),
-      'phone': phone,
-      'website': website,
-      'company': company.toJson(),
-    };
-  }
+  }  
 }
 
 class Address {
@@ -71,15 +58,6 @@ class Address {
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'street': street,
-      'suite': suite,
-      'city': city,
-      'zipcode': zipcode,
-      'geo': geo.toJson(),
-    };
-  }
 }
 
 class Geo {
@@ -98,12 +76,6 @@ class Geo {
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'lat': lat,
-      'lng': lng,
-    };
-  }
 }
 
 class Company {
@@ -123,13 +95,5 @@ class Company {
       catchPhrase: json['catchPhrase'],
       bs: json['bs'],
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'name': name,
-      'catchPhrase': catchPhrase,
-      'bs': bs,
-    };
   }
 }

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:socila_media_application/api/api_services.dart';
 import 'package:socila_media_application/models/post_model.dart';
-import 'package:socila_media_application/screens/post_details.dart';
+import 'package:socila_media_application/models/app_data.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -9,49 +10,42 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late Future<List<Post>> _posts;
-
   @override
   void initState() {
     super.initState();
-    _posts = ApiService().fetchPosts();
+    // Fetch posts and update AppData singleton
+    ApiService().fetchPosts().then((_) {
+      setState(() {});
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    List<Post> posts = AppData().getPosts();
+
     return Scaffold(
-      appBar: AppBar(title: Text('Posts')),
-      body: FutureBuilder<List<Post>>(
-        future: _posts,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (snapshot.hasData) {
-            return ListView.builder(
-              itemCount: snapshot.data!.length,
+      appBar: AppBar(
+        title: Text(
+          'Posts',
+          style: TextStyle(color: const Color.fromARGB(255, 255, 255, 255)),
+        ),
+        backgroundColor: const Color.fromARGB(170, 0, 0, 0),
+      ),
+      body: posts.isEmpty
+          ? Center(child: CircularProgressIndicator())
+          : ListView.builder(
+              itemCount: posts.length,
               itemBuilder: (context, index) {
-                Post post = snapshot.data![index];
+                Post post = posts[index];
                 return ListTile(
                   title: Text(post.title),
                   subtitle: Text(post.body),
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PostDetailsScreen(postId: post.id),
-                      ),
-                    );
+                    Get.toNamed('/post', arguments: post.id);
                   },
                 );
               },
-            );
-          } else {
-            return Center(child: Text('No posts found'));
-          }
-        },
-      ),
+            ),
     );
   }
 }

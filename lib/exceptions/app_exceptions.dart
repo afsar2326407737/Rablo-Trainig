@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 
 class AppExceptions {
+  AppExceptions._();
   static String handleError(DioException error) {
     switch (error.type) {
       case DioExceptionType.connectionTimeout:
